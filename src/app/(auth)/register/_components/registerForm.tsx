@@ -1,13 +1,21 @@
 'use client';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Form, FormField, FormItem, FormLabel } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { redirect } from 'next/navigation';
+import { useActionState, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { registerAction } from '../registerAction';
-import { useActionState } from 'react';
-import { redirect } from 'next/navigation';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const LoginSchema = z.object({
     name: z.string().min(3, {
@@ -31,29 +39,44 @@ export const RegisterForm = () => {
     });
 
     const [state, formAction, isPending] = useActionState(registerAction, null);
+    const [dialogOpen, setDialogOpen] = useState(false);
+
+    useEffect(() => {
+        if (state?.success === false) {
+            setDialogOpen(true);
+        }
+    }, [state]);
 
     return (
         <>
-            {state?.success === false && (
-                <Alert className='border-red-700 bg-red-100'>
-                    <AlertTitle className='text-red-600'>Erro</AlertTitle>
-                    <AlertDescription className='text-red-600'>
-                        {state.message}
-                    </AlertDescription>
-                </Alert>
-            )}
+            <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Erro</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            {state?.message}
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogAction>Continue</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
 
             {state?.success && redirect('/login')}
 
-
             <Form {...form}>
-                <form className='flex flex-col gap-3' action={formAction}>
+                <form action={formAction} className='flex flex-col gap-3'>
                     <FormField
                         name='name'
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Name</FormLabel>
-                                <Input placeholder='John Doe' {...field} />
+                                <Input
+                                    placeholder='John Doe'
+                                    {...field}
+                                    required
+                                />
                             </FormItem>
                         )}
                     />
@@ -63,8 +86,9 @@ export const RegisterForm = () => {
                             <FormItem>
                                 <FormLabel>Email</FormLabel>
                                 <Input
-                                    placeholder='mail@exemple.com'
+                                    placeholder='mail@example.com'
                                     {...field}
+                                    required
                                 />
                             </FormItem>
                         )}
@@ -78,14 +102,13 @@ export const RegisterForm = () => {
                                     placeholder='********'
                                     type='password'
                                     {...field}
+                                    required
                                 />
                             </FormItem>
                         )}
                     />
-
                     <Button disabled={isPending} type='submit'>
-                        {' '}
-                        Register{' '}
+                        Register
                     </Button>
                 </form>
             </Form>

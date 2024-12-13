@@ -1,21 +1,20 @@
 import { compareSync } from 'bcrypt-ts';
 import { prisma } from './prisma';
 
-type User = {
-    name: string;
-    email: string;
-};
+
 
 export const findUserByCredentials = async (
     email: string,
     password: string
-): Promise<User | null> => {
+) => {
     try {
         const user = await prisma.user.findUnique({
             where: {
                 email,
             },
         });
+
+        console.log(user);
 
         if (!user || !user.password) {
             return null;
@@ -27,7 +26,7 @@ export const findUserByCredentials = async (
             return null;
         }
 
-        return { email: user.email, name: user.name };
+        return user;
     } catch (error) {
         return null;
     }

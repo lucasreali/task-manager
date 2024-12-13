@@ -1,4 +1,3 @@
-import { prisma } from '@/lib/prisma';
 import { findUserByCredentials } from '@/lib/user';
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
@@ -20,4 +19,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             },
         }),
     ],
+    pages: {
+        signIn: '/',
+        signOut: '/login',
+    }
 });

@@ -5,6 +5,18 @@ import { Input } from '@/components/ui/input';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import loginAction from '../loginAction';
+import { useActionState } from 'react';
+import { useState, useEffect } from 'react';
+import { redirect } from 'next/navigation';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 const LoginSchema = z.object({
     email: z.string().email({
@@ -14,6 +26,7 @@ const LoginSchema = z.object({
         message: 'Password must be at least 6 characters long',
     }),
 });
+
 export const LoginForm = () => {
     const form = useForm<z.infer<typeof LoginSchema>>({
         defaultValues: {
@@ -22,34 +35,67 @@ export const LoginForm = () => {
         },
     });
 
-    return (
-        <Form {...form}>
-            <form className='flex flex-col gap-3' action={loginAction}>
-                <FormField
-                    name='email'
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Email</FormLabel>
-                            <Input placeholder='mail@exemple.com' {...field} />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    name='password'
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Password</FormLabel>
-                            <Input
-                                placeholder='********'
-                                type='password'
-                                {...field}
-                            />
-                        </FormItem>
-                    )}
-                />
+    const [state, formAction, isPending] = useActionState(loginAction, null);
+    const [dialogOpen, setDialogOpen] = useState(false);
 
-                <Button> Login </Button>
-            </form>
-        </Form>
+    useEffect(() => {
+        if (state?.success === false) {
+            setDialogOpen(true);
+        }
+    }, [state]);
+
+    return (
+        <>
+            <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Erro</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            {state?.message}
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogAction>Continue</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
+            <Form {...form}>
+                {state?.success === true && redirect('/')}
+                <form className='flex flex-col gap-3' action={formAction}>
+                    <FormField
+                        name='email'
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Email</FormLabel>
+                                <Input
+                                    placeholder='mail@example.com'
+                                    {...field}
+                                    required
+                                />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        name='password'
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Password</FormLabel>
+                                <Input
+                                    placeholder='********'
+                                    type='password'
+                                    {...field}
+                                    required
+                                />
+                            </FormItem>
+                        )}
+                    />
+
+                    <Button disabled={isPending} type='submit'>
+                        Login
+                    </Button>
+                </form>
+            </Form>
+        </>
     );
 };

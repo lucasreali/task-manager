@@ -6,9 +6,17 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
+import { auth } from '@/services/auth';
+import { redirect } from 'next/navigation';
 import { RegisterForm } from './_components/registerForm';
 
-const Register = () => {
+const Register = async () => {
+    const session = await auth();
+
+    if (session) {
+        redirect('/');
+    }
+
     return (
         <div className='w-full h-screen flex items-center justify-center'>
             <Card className='w-96'>
