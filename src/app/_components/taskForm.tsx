@@ -5,12 +5,13 @@ import { Form, FormField, FormItem, FormLabel } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useTaskContext } from '@/context/taskContext';
-import { createTask } from '@/lib/task';
+import { createTask, updateTask } from '@/lib/task';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 interface EditTaskFormProps {
+    task_id?: string;
     title?: string;
     description?: string;
 }
@@ -22,7 +23,11 @@ const FormSchema = z.object({
     description: z.string().optional(),
 });
 
-export const TaskForm = ({ title = '', description = '' }: EditTaskFormProps) => {
+export const TaskForm = ({
+    title = '',
+    description = '',
+    task_id,
+}: EditTaskFormProps) => {
     const { notifyTaskCreated } = useTaskContext();
 
     const form = useForm<z.infer<typeof FormSchema>>({
@@ -32,9 +37,14 @@ export const TaskForm = ({ title = '', description = '' }: EditTaskFormProps) =>
 
     const onSubmit = async (data: z.infer<typeof FormSchema>) => {
         try {
-            await createTask(data);
+            if (task_id) {
+                updateTask(task_id, data);
+            } else {
+                await createTask(data);
+                form.reset();
+            }
+            
             await notifyTaskCreated();
-            form.reset();
         } catch (error) {
             console.error('Failed to create task:', error);
         }
@@ -44,15 +54,15 @@ export const TaskForm = ({ title = '', description = '' }: EditTaskFormProps) =>
         <Form {...form}>
             <form
                 onSubmit={form.handleSubmit(onSubmit)}
-                className="flex flex-col gap-3"
+                className='flex flex-col gap-3'
             >
                 <FormField
-                    name="title"
+                    name='title'
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Title</FormLabel>
                             <Input
-                                placeholder="Title"
+                                placeholder='Title'
                                 {...field}
                                 disabled={form.formState.isSubmitting}
                             />
@@ -60,22 +70,19 @@ export const TaskForm = ({ title = '', description = '' }: EditTaskFormProps) =>
                     )}
                 />
                 <FormField
-                    name="description"
+                    name='description'
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Description</FormLabel>
                             <Textarea
-                                placeholder="Description"
+                                placeholder='Description'
                                 {...field}
                                 disabled={form.formState.isSubmitting}
                             />
                         </FormItem>
                     )}
                 />
-                <Button
-                    type="submit"
-                    disabled={form.formState.isSubmitting}
-                >
+                <Button type='submit' disabled={form.formState.isSubmitting}>
                     {form.formState.isSubmitting ? 'Submitting...' : 'Confirm'}
                 </Button>
             </form>

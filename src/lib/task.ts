@@ -113,3 +113,14 @@ export const deleteTask = async (task_id: string) => {
 
     return deletedTask;
 };
+
+export const updateTask = async (task_id: string, data: {title: string, description?: string}) => {
+    const updatedTask = await prisma.task.update({
+        where: {
+            id: task_id,
+        },
+        data,
+    });
+
+    return updatedTask;
+}

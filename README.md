@@ -55,7 +55,7 @@ npx auth secret
 
 ### 4. Configurar Variáveis de Ambiente
 
-Renomeie o arquivo .env-exemple para .env e adicione a URL de conexão do seu banco de dados na variável DATABASE_URL.
+Renomeie o arquivo .exemple-env para .env e adicione a URL de conexão do seu banco de dados na variável DATABASE_URL.
 
 ### 5. Rodar o Projeto
 
@@ -77,4 +77,4 @@ Certifique-se de ter o seguinte instalado:
 
 - Node.js (versão 20 ou superior)
 - Banco de dados configurado (como PostgreSQL ou MySQL, dependendo da sua configuração no Prisma)
-OBS: SQLite não funcionara pois não possui a opção de ENUM
+- OBS: SQLite não funcionara pois não possui a opção de ENUM

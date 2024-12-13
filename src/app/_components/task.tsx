@@ -133,6 +133,7 @@ export const Task = ({ id, title, description, status }: TaskProps) => {
                                 <DialogContent>
                                     <DialogTitle>Edit Taks</DialogTitle>
                                     <TaskForm
+                                        task_id={id}
                                         title={title}
                                         description={description}
                                     />
