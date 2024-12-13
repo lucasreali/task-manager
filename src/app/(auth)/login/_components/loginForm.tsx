@@ -18,7 +18,7 @@ import {
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 
-const loginSchema = z.object({
+const LoginSchema = z.object({
     email: z.string().email({
         message: 'Invalid email address',
     }),
@@ -27,10 +27,10 @@ const loginSchema = z.object({
     }),
 });
 
-type LoginSchema = z.infer<typeof loginSchema>;
+type LoginSchemaType = z.infer<typeof LoginSchema>;
 
 export const LoginForm = () => {
-    const form = useForm<LoginSchema>({
+    const form = useForm<LoginSchemaType>({
         defaultValues: {
             email: '',
             password: '',
