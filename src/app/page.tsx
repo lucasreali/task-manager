@@ -7,12 +7,12 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
-import { auth, signOut } from '@/services/auth';
+import { TaskProvider } from '@/context/taskContext';
+import { auth } from '@/services/auth';
 import { redirect } from 'next/navigation';
+import { LogOutButton } from './_components/logoutButton';
 import { TaskArea } from './_components/taskArea';
 import { TaskForm } from './_components/taskForm';
-import { TaskProvider } from '@/context/taskContext';
-import { LogOutButton } from './_components/logoutButton';
 
 const Home = async () => {
     const session = await auth();
@@ -21,7 +21,6 @@ const Home = async () => {
         redirect('/login');
     }
 
-    
 
     return (
         <> 
